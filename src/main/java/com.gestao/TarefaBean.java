@@ -38,6 +38,18 @@ public class TarefaBean implements Serializable {
         }
     }
 
+    public List<Tarefa> getConcluidas() {
+        EntityManager consulta = emf.createEntityManager();
+        try {
+            return consulta.createQuery("SELECT t FROM Tarefa t WHERE t.situacao = :sit", Tarefa.class)
+                    .setParameter("sit", Situacao.CONCLUIDA)
+                    .getResultList();
+        } finally {
+            consulta.close();
+        }
+    }
+
+
     public String salvar() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction(); //operação de escrita no banco precisa estar dentro de uma transação.
@@ -62,14 +74,18 @@ public class TarefaBean implements Serializable {
             if (t != null) {
                 t.setSituacao(Situacao.CONCLUIDA);
                 em.merge(t);
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                "Tarefa concluída com sucesso!", null));
             }
             tx.commit();
         } finally {
             if (tx.isActive()) tx.rollback();
             em.close();
         }
-        return "listar.xhtml?faces-redirect=true"; // força atualização da página
+        return "listar.xhtml?faces-redirect=true";
     }
+
 
     public String remover(Long id) {
         EntityManager em = emf.createEntityManager();

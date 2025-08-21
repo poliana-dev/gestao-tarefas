@@ -4,8 +4,15 @@
     <title>Lista de Tarefas</title>
 </h:head>
 <h:body>
+    <h:messages globalOnly="true" layout="table"/>
+
+    <h2>Tarefas em andamento</h2>
+    <h:panelGroup rendered="#{empty tarefaBean.tarefas}">
+        <p>Nenhuma tarefa em andamento</p>
+    </h:panelGroup>
     <h:form>
-        <h:dataTable value="#{tarefaBean.tarefas}" var="t">
+        <h:dataTable value="#{tarefaBean.tarefas}" var="t"
+                     rendered="#{not empty tarefaBean.tarefas}">
             <h:column>
                 <f:facet name="header">Título</f:facet>
                 #{t.titulo}
@@ -28,10 +35,38 @@
             </h:column>
             <h:column>
                 <h:commandButton value="Concluir" action="#{tarefaBean.concluir(t.id)}" />
-                <h:commandButton value="Remover" action="#{tarefaBean.remover(t.id)}" />
+                <h:commandButton value="Remover" action="#{tarefaBean.remover(t.id)}" onclick="return confirm('Tem certeza que deseja remover esta tarefa?');" />
             </h:column>
         </h:dataTable>
     </h:form>
+
+    <h2>Tarefas concluídas</h2>
+    <h:panelGroup rendered="#{empty tarefaBean.concluidas}">
+        <p>Nenhuma tarefa concluída ainda ✅</p>
+    </h:panelGroup>
+    <h:dataTable value="#{tarefaBean.concluidas}" var="t"
+                 rendered="#{not empty tarefaBean.concluidas}">
+        <h:column>
+            <f:facet name="header">Título</f:facet>
+            #{t.titulo}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Responsável</f:facet>
+            #{t.responsavel}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Prioridade</f:facet>
+            #{t.prioridade}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Deadline</f:facet>
+            #{t.deadline}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Situação</f:facet>
+            #{t.situacao}
+        </h:column>
+    </h:dataTable>
 
     <h:link outcome="cadastrar.xhtml" value="Cadastrar nova tarefa" />
 </h:body>
