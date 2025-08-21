@@ -1,0 +1,7 @@
+:root{
+    --branco-gelo:#F0F0F0;
+}
+
+h:body{
+    background: var(--branco-gelo);
+}
