@@ -1,3 +1,12 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Binários e build
+bin/
 target/
-target
-.idea
+
+# Outros
+*.log
+
