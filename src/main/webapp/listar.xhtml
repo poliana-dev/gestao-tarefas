@@ -40,6 +40,12 @@
                     #{t.situacao}
                 </h:column>
                 <h:column>
+                
+	                 <h:link outcome="editar.xhtml" styleClass="btn btn-warning btn-sm me-2">
+				        <h:outputText value="Editar"/>
+				        <f:param name="id" value="#{t.id}" />
+				    </h:link>
+				    
                     <h:commandButton value="Concluir" styleClass="btn btn-success btn-sm me-2" action="#{tarefaBean.concluir(t.id)}"/>
                     <h:commandButton value="Remover" styleClass="btn btn-danger btn-sm"
                                      action="#{tarefaBean.remover(t.id)}"
