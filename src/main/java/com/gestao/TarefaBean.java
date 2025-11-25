@@ -1,5 +1,6 @@
 package com.gestao;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -49,20 +50,68 @@ public class TarefaBean implements Serializable {
     }
 
 
+//    public String salvar() {
+//        EntityManager em = emf.createEntityManager();
+//        EntityTransaction tx = em.getTransaction(); //operação de escrita no banco precisa estar dentro de uma transação.
+//        try {
+//            tx.begin();
+//            em.persist(tarefa);
+//            tx.commit(); // o texto é salvo no banco e a transação termina
+//        } finally {
+//            if (tx.isActive()) tx.rollback(); // se algo der errado a ação é revertida
+//            em.close();
+//        }
+//        return "listar.xhtml";
+//
+//    }
+    
     public String salvar() {
+    	EntityManager em = emf.createEntityManager();
+    	EntityTransaction tx = em.getTransaction();
+    	
+    	try {
+    		tx.begin();
+    		
+    		if (tarefa.getId()==null) {
+    			em.persist(tarefa); // criar nova tarefa se o id nao existir
+    		} else {
+    			em.merge(tarefa); // atualiza a tarefa que tiver id
+    		}
+    		tx.commit();
+    		FacesContext.getCurrentInstance().addMessage(null,
+    				new FacesMessage(FacesMessage.SEVERITY_INFO,
+    						"Tarefa salva com sucesso", null));
+    	}finally {
+    		if (tx.isActive()) tx.rollback();
+    		em.close();
+    	}
+    	
+    	return "listar.xhtml?faces-redirect=true";
+    }
+    
+    public void buscar_tarefa_id(long id) {
         EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction(); //operação de escrita no banco precisa estar dentro de uma transação.
         try {
-            tx.begin();
-            em.persist(tarefa);
-            tx.commit(); // o texto é salvo no banco e a transação termina
+            tarefa = em.find(Tarefa.class, id);
         } finally {
-            if (tx.isActive()) tx.rollback(); // se algo der errado a ação é revertida
             em.close();
         }
-        return "listar.xhtml";
-
     }
+    
+    @PostConstruct
+    public void init() {
+        String param = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap()
+                .get("id");
+
+        if (param != null) {
+            buscar_tarefa_id(Long.parseLong(param));
+        }
+    }
+
+
+    
 
     public String concluir(Long id) {
         EntityManager em = emf.createEntityManager();
